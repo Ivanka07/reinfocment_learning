@@ -8,9 +8,15 @@ print('Action space description ', env.action_space)
 print('Observation  space description ', env.observation_space)
 
 obs = env.reset()
+done = False
+
 for t in range(1000):
+	if done:
+		break 
+
 	if len(sys.argv)>1 and sys.argv[1] == 'render':
 		env.render()
+	
 	cart_pos, cart_vel, pole_ang, ang_vel = obs
 	
 	if pole_ang > 0:
@@ -21,3 +27,4 @@ for t in range(1000):
 	print('Observation ', obs)
 	print('Reward ', reward)
 
+	
