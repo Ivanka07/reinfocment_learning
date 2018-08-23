@@ -39,6 +39,8 @@ class SimpleGridEnvironment:
         '''
         Takes position and orientation of the agent, 
         the action it would perform and returns a reward
+        :param action: action to perform,
+        :return reward:
         '''
         pass   
 
@@ -55,31 +57,31 @@ class SimpleGridEnvironment:
             self.get_orientation(action)
         else:
             self.get_position(action)
-        return self.get_observations()
+
 
     def get_orientation(self, action):
         if self.orientation == SimpleOrientation.UP:
-            if action == self.actions[0]:
+            if action == SimpleGridAction.TURN_LEFT:
                 self.orientation = SimpleOrientation.LEFT
-            elif action == self.actions[1]:
+            elif action == SimpleGridAction.TURN_RIGHT:
                 self.orientation = SimpleOrientation.RIGHT
 
-        if self.orientation == SimpleOrientation.DOWN:
-            if action == self.actions[0]:
+        elif self.orientation == SimpleOrientation.DOWN:
+            if action == SimpleGridAction.TURN_LEFT:
                 self.orientation = SimpleOrientation.RIGHT
-            elif action == self.actions[1]:
+            elif action == SimpleGridAction.TURN_RIGHT:
                 self.orientation = SimpleOrientation.LEFT
 
-        if self.orientation == SimpleOrientation.RIGHT:
-            if action == self.actions[0]:
+        elif self.orientation == SimpleOrientation.RIGHT:
+            if action == SimpleGridAction.TURN_LEFT:
                 self.orientation = SimpleOrientation.UP
-            elif action == self.actions[1]:
+            elif action == SimpleGridAction.TURN_RIGHT:
                 self.orientation = SimpleOrientation.DOWN
 
-        if self.orientation == SimpleOrientation.LEFT:
-            if action == self.actions[0]:
+        elif self.orientation == SimpleOrientation.LEFT:
+            if action == SimpleGridAction.TURN_LEFT:
                 self.orientation = SimpleOrientation.DOWN
-        elif action == self.actions[1]:
+            elif action == SimpleGridAction.TURN_RIGHT:
                 self.orientation = SimpleOrientation.UP
 
         
