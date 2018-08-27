@@ -1,6 +1,6 @@
 import random
 from enum import Enum
-from SimpleGridAction import SimpleGridAction
+from SimpleGridAction import *
 
 class SimpleOrientation(Enum):
     UP = 0
@@ -17,12 +17,12 @@ class SimpleGridEnvironment:
         '''
         self.start_cell = start_cell
         self.finish_cell = end_cell
-        self.actions = self.get_actions()
         self.posX  = start_cell[0]
         self.posY = start_cell[1]
         self.orientation = SimpleOrientation.UP
         self.length = length
-
+        self.actions = None
+        self.rewards = None
 
     def get_observations(self):
         '''
@@ -31,18 +31,32 @@ class SimpleGridEnvironment:
         return [self.posX, self.posY, self.orientation]
 
 
-    def get_actions(self):
-    	return [SimpleGridAction.TURN_LEFT, SimpleGridAction.TURN_RIGHT, SimpleGridAction.MOVE_FORWARD]
+    def set_actions(self, actions):
+        '''
+        :param actions: dictionary: (posX, posY): list of possible actions
+        '''
+        self.actions = actions
+
+    def set_states(self):
+        assert self.length != None
+        for x in range(0, self.length):
+            for y in range(0, self.length):      
+                self.states.append((x,y)) 
 
 
-    def get_reward(self, action):
+    def set_rewards(self, rewards):
         '''
-        Takes position and orientation of the agent, 
-        the action it would perform and returns a reward
-        :param action: action to perform,
-        :return reward:
+        :param rewards: dictionary:(posX, posY)
         '''
-        pass   
+        self.rewards = rewards
+    
+    def reward(self, posX, posY):
+        assert self.rewards != None, 'Define the rewards first'
+        r = self.rewards[(posX, posY)]
+        if r!=None:
+            return r
+        else:
+            return 0
 
 
     def is_done(self):
@@ -52,13 +66,36 @@ class SimpleGridEnvironment:
     def perform_action(self, action):
         if self.is_done():
             raise Exception('Nothing to do. Game is over!')
+        if type(action) == MoveAndTurnAction:
+            if action == self.actions[0] or action == self.actions[1]:
+                self.get_orientation(action)
+            else:
+                self.get_position(action)
+        elif type(action) == OnlyMoveAction:
+            only_move_action(action)    
+        return self.reward(self.posX, self.posY)
 
-        if action == self.actions[0] or action == self.actions[1]:
-            self.get_orientation(action)
-        else:
-            self.get_position(action)
-
-
+    
+    def get_states(self):
+        assert self.actions != None, 'Define the actions first'
+        assert self.rewards != None, 'Define the rewards first'
+        return set(self.actions.keys() + self.rewards.keys())    
+    
+    def only_move_action(self, action):
+        assert self.actions != None, 'Define the actions first'
+        if action == OnlyMoveAction.MOVE_LEFT:
+            if self.posX > 0:
+                self.posX -= 1
+        elif action == OnlyMoveAction.MOVE_RIGHT:
+            if self.posX < (self.length -1):
+                self.posX += 1
+        elif action == OnlyMoveAction.MOVE_UP:
+            if self.posY > 0:
+                self.posX -= 1
+        elif action == OnlyMoveAction.MOVE_DOWN:
+            if self.posY < (self.length-1):
+                self.posX += 1
+    
     def get_orientation(self, action):
         if self.orientation == SimpleOrientation.UP:
             if action == SimpleGridAction.TURN_LEFT:
@@ -83,12 +120,11 @@ class SimpleGridEnvironment:
                 self.orientation = SimpleOrientation.DOWN
             elif action == SimpleGridAction.TURN_RIGHT:
                 self.orientation = SimpleOrientation.UP
-
         
     def get_position(self, action):
         '''
         :returns: next position of the agent
-        depends on orientation and position
+         depends on orientation and position
         '''
         if self.orientation == SimpleOrientation.UP:
             if self.posY == 0:
