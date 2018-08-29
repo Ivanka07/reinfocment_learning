@@ -59,6 +59,9 @@ class SimpleGridEnvironment:
             for y in range(0, self.length):      
                 self.states.append((x,y)) 
 
+    def set_state(self, state):
+        self.posX = state[0]
+        self.posY = state[1]
 
     def set_rewards(self, rewards):
         '''
@@ -66,13 +69,13 @@ class SimpleGridEnvironment:
         '''
         self.rewards = rewards
     
-    def reward(self, posX, posY):
+    def reward(self, state, default=-1):
         assert self.rewards != None, 'Define the rewards first'
-        r = self.rewards[(posX, posY)]
+        r = self.rewards[state]
         if r!=None:
             return r
         else:
-            return 0
+            return default
 
 
     def is_done(self):
@@ -88,8 +91,8 @@ class SimpleGridEnvironment:
             else:
                 self.get_position(action)
         elif type(action) == OnlyMoveAction:
-            only_move_action(action)    
-        return self.reward(self.posX, self.posY)
+            self.only_move_action(action)    
+        return self.reward((self.posX, self.posY))
 
     
     def get_states(self):
@@ -112,10 +115,10 @@ class SimpleGridEnvironment:
                 self.posX += 1
         elif action == OnlyMoveAction.MOVE_UP:
             if self.posY > 0:
-                self.posX -= 1
+                self.posY -= 1
         elif action == OnlyMoveAction.MOVE_DOWN:
             if self.posY < (self.length-1):
-                self.posX += 1
+                self.posY += 1
    
 
 
