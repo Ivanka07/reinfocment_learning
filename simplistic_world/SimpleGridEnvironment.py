@@ -15,8 +15,8 @@ class SimpleGridEnvironment:
         :param start_cell: array with 2d x and y position
         :param end_cell: finish array with 2d position
         '''
-        self.start_cell = start_cell
-        self.finish_cell = end_cell
+        self.start_cell = (start_cell[0], start_cell[1])
+        self.finish_cell = (end_cell[0], end_cell[1])
         self.posX  = start_cell[0]
         self.posY = start_cell[1]
         self.orientation = SimpleOrientation.UP
@@ -29,6 +29,22 @@ class SimpleGridEnvironment:
         Observatiom is Agent position in the grid and orientaion
         '''
         return [self.posX, self.posY, self.orientation]
+    
+    
+    def next_state(self, cur_state,  action):
+        if action == OnlyMoveAction.MOVE_DOWN:
+             return (cur_state[0], cur_state[1]+1)
+ 
+        elif action == OnlyMoveAction.MOVE_UP:
+             return (cur_state[0],cur_state[1]-1)
+ 
+ 
+        elif action == OnlyMoveAction.MOVE_LEFT:
+             return (cur_state[0]-1, cur_state[1])
+ 
+        elif action == OnlyMoveAction.MOVE_RIGHT:
+             return (cur_state[0]+1, cur_state[1])
+
 
 
     def set_actions(self, actions):
@@ -79,7 +95,12 @@ class SimpleGridEnvironment:
     def get_states(self):
         assert self.actions != None, 'Define the actions first'
         assert self.rewards != None, 'Define the rewards first'
-        return set(self.actions.keys() + self.rewards.keys())    
+        states = []
+        for s in self.actions.keys():
+            states.append(s)
+        for s in self.rewards.keys():
+            states.append(s)
+        return set(states)    
     
     def only_move_action(self, action):
         assert self.actions != None, 'Define the actions first'
@@ -95,8 +116,10 @@ class SimpleGridEnvironment:
         elif action == OnlyMoveAction.MOVE_DOWN:
             if self.posY < (self.length-1):
                 self.posX += 1
-    
-    def get_orientation(self, action):
+   
+
+
+    def move_and_rotate(self, action):
         if self.orientation == SimpleOrientation.UP:
             if action == SimpleGridAction.TURN_LEFT:
                 self.orientation = SimpleOrientation.LEFT
