@@ -82,6 +82,39 @@ def iterativ_policy_eval(grid, thr=0.001, prob=0.25, gamma=1.0, iter=1000):
     for s in states:
         print('On state = %s, value func is= %s' % (s, V[s]))
 
+def iterativ_policy_eval_with_policy(grid, policy, thr=0.001, gamma=1.0, iter=1000):
+    '''
+    V(s) of start/end states are 0.0
+    '''
+    V = {}
+    states = grid.get_states()
+    for s in states:
+        V[s] = 0.0
+    for k in range(0, iter):
+        print('-------------- Iteration  = %s ---------------' % k)
+        print('Old Value function for this iteration = %s' %V )
+        delta = 0
+        for s in states:
+            if s in policy:
+                v_old = V[s]
+                if s  == grid.start_cell or s == grid.finish_cell:
+                    continue
+                grid.set_state(s)
+                a = policy[s]
+                print('Current action = ', a)
+                reward = grid.perform_action(a) 
+                current_state =  (grid.posX, grid.posY)
+                V[s] =  reward + gamma*V[current_state]
+                delta = max(delta, abs(V[s]- v_old))
+        if delta < thr:
+            print('Delta = ', delta)
+            break 
+    print('--Final value function --')
+    for s in states:
+        print('On state = %s, value func is= %s' % (s, V[s]))
+
+
+
 if __name__ == '__main__':
     print('Creating a grid environment first')
     env = SimpleGridEnvironment([0,0], [3,3], 4)
