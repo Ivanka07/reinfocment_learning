@@ -24,14 +24,14 @@ def train(inputs, hidden, outputs, steps, episodes):
 			observation = env.reset()
 			for step in range(steps):
 				action_value = action.eval(feed_dict={input_pl:observation.reshape(1, inputs)})
-				print('Action value = %s' % action_value)
+				#print('Action value = %s' % action_value)
 				observation, reward, done, infpo = env.step(action_value[0][0])
 				if done:
 					avg_steps.append(step)
 					print('Done after {} step'.format(step))
 
-		print('After {} Episodes, avarage steps pre game was {}'.format(episodes, np.mean(abg_steps)))
+		print('After {} Episodes, avarage steps per game was {}'.format(episodes, np.mean(abg_steps)))
 
 
 
-train(4,4,1, 500, 500)
+train(4,4,1, 500, 50)
